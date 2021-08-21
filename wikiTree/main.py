@@ -10,12 +10,14 @@ def callback():
 app.title("WikiTree")
 app.geometry("500x450")
 
-searchLabel = ttk.Label(app, text="Enter Link or Keyword")
+lblTitle = ttk.Label(app, text="WikiTree", font=(('Arial'), 22))
+searchLabel = ttk.Label(app, text="Enter Link or Keyword: ")
 searchEntry = ttk.Entry(app, width=30)
 searchButton = ttk.Button(app, text="Run", command=callback)
-searchLabel.pack()
-searchEntry.pack()
-searchButton.pack()
+lblTitle.grid(row=0, column=1)
+searchLabel.grid(row=1, column=0)
+searchEntry.grid(row=1, column=1)
+searchButton.grid(row=1, column=2,padx=3)
 # ttk.Label(app, text="Treeview(hierarchical)").pack()
 
 # Creating treeview window
