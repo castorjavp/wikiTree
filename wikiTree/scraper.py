@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 import requests
-
+import random
 
 class Scraper:
-	def getLinks(url):
+	# this function expects a wikipedia url and returns a dictionary with the titles of all the content links and the links to other wikipedia pages in the url passed in.
+	def getLinks(url, linksSeen, maxNumOfLinks=8):
 		soup = BeautifulSoup(requests.get(url).text, 'html.parser')
 		links = soup.select('div#bodyContent a')
 		result = {}
@@ -12,8 +13,14 @@ class Scraper:
 			if not (link.string and href and href.startswith('/wiki/') and ':' not in href):
 				continue
 			title = link.string[:1].upper() + link.string[1:]
+			if title in linksSeen:
+				continue
+			linksSeen.add(title)
 			result[title] = f'https://en.wikipedia.org{href}'
-		return result
+		randomLinks = {}
+		for i in range(min(maxNumOfLinks,len(result))):
+			k,v = random.choice(list(result.items()))
+			randomLinks[k] = v
+		return randomLinks
 
-# result = getLinks("https://en.wikipedia.org/wiki/Computer_science")
-# print(result)
+

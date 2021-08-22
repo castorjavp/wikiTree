@@ -2,13 +2,30 @@ from tkinter import *
 from tkinter import ttk
 from scraper import Scraper
 
+
 links = {}
 app = Tk()
+
+linksSeen = set()
+
 def callback():
-	links =  Scraper.getLinks(searchEntry.get())
-	print(links)
+	treeLabel.config({"text":f"Tree View for {searchEntry.get()}"})
+	populateTreeView(treeview, searchEntry.get())
+
+def populateTreeView(treeview,url):
+	randomLinks = Scraper.getLinks(url, linksSeen)
+	i=0
+	for title,link in randomLinks.items():
+		treeview.insert("", f"{i}", title , text=title)
+		i+=1
+	for title, link in randomLinks.items():
+		currentLinkChildren = Scraper.getLinks(link, linksSeen)
+		for k,v in currentLinkChildren.items():
+			treeview.insert("", f"{i}", k, text=k)	
+			treeview.move(k,title,"end")	
+
 app.title("WikiTree")
-app.geometry("500x450")
+app.geometry("800x450")
 
 lblTitle = ttk.Label(app, text="WikiTree", font=(('Arial'), 22))
 searchLabel = ttk.Label(app, text="Enter Link or Keyword: ")
@@ -18,45 +35,12 @@ lblTitle.grid(row=0, column=1)
 searchLabel.grid(row=1, column=0)
 searchEntry.grid(row=1, column=1)
 searchButton.grid(row=1, column=2,padx=3)
-# ttk.Label(app, text="Treeview(hierarchical)").pack()
 
-# Creating treeview window
-# treeview = ttk.Treeview(app)
-#
-# # Calling pack method on the treeview
-# treeview.pack()
-#
-# # Inserting items to the treeview
-# # Inserting parent
-# treeview.insert('', '0', 'item1',
-# 				text='GeeksforGeeks')
-#
-# # Inserting child
-# treeview.insert('', '1', 'item2',
-# 				text='Computer Science')
-# treeview.insert('', '2', 'item3',
-# 				text='GATE papers')
-# treeview.insert('', 'end', 'item4',
-# 				text='Programming Languages')
-#
-# # Inserting more than one attribute of an item
-# treeview.insert('item2', 'end', 'Algorithm',
-# 				text='Algorithm')
-# treeview.insert('item2', 'end', 'Data structure',
-# 				text='Data structure')
-# treeview.insert('item3', 'end', '2018 paper',
-# 				text='2018 paper')
-# treeview.insert('item3', 'end', '2019 paper',
-# 				text='2019 paper')
-# treeview.insert('item4', 'end', 'Python',
-# 				text='Python')
-# treeview.insert('item4', 'end', 'Java',
-# 				text='Java')
-#
-# # Placing each child items in parent widget
-# treeview.move('item2', 'item1', 'end')
-# treeview.move('item3', 'item1', 'end')
-# treeview.move('item4', 'item1', 'end')
+treeLabel = ttk.Label(app, text="Tree View")
+treeLabel.grid(row=2,column=1)
 
-# Calling main()
+# Creating treeview 
+treeview = ttk.Treeview(app)
+treeview.grid(row=3, column=0, columnspan=5, sticky=W+E)
+
 app.mainloop()
