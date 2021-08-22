@@ -8,21 +8,49 @@ app = Tk()
 
 linksSeen = set()
 
+
 def callback():
 	treeLabel.config({"text":f"Tree View for {searchEntry.get()}"})
 	populateTreeView(treeview, searchEntry.get())
 
 def populateTreeView(treeview,url):
 	randomLinks = Scraper.getLinks(url, linksSeen)
+	insertLinks(treeview, randomLinks)
+	insertLinksToParents(treeview, randomLinks)
+
+
+def insertLinks(treeview, links):
 	i=0
-	for title,link in randomLinks.items():
+	for title,link in links.items():
 		treeview.insert("", f"{i}", title , text=title)
 		i+=1
-	for title, link in randomLinks.items():
+
+def insertLinksToParents(treeview, parentLinks):
+	print(len(get_all_children(treeview)))
+	# if len(get_all_children(treeview)) >= 32:
+	# 	return
+	for title, link in parentLinks.items():
 		currentLinkChildren = Scraper.getLinks(link, linksSeen)
 		for k,v in currentLinkChildren.items():
-			treeview.insert("", f"{i}", k, text=k)	
-			treeview.move(k,title,"end")	
+			treeview.insert("", 0, k, text=k)	
+			treeview.move(k,title,"end")
+			if len(get_all_children(treeview)) >= 150:
+				return
+			# print(len(get_all_children(treeview)))
+		insertLinksToParents(treeview, currentLinkChildren)
+
+def getSizeOfParent(treeview, parent="", size=0):
+	children = treeview.get_children(parent)
+	size += len(children)
+	for child in children:
+		getSizeOfParent(treeview, child, size)
+	return size
+
+def get_all_children(tree, item=""):
+    children = tree.get_children(item)
+    for child in children:
+        children += get_all_children(tree, child)
+    return children
 
 app.title("WikiTree")
 app.geometry("800x450")
