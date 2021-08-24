@@ -26,25 +26,22 @@ def insertLinks(treeview, links):
 		i+=1
 
 def insertLinksToParents(treeview, parentLinks):
-	print(len(get_all_children(treeview)))
-	# if len(get_all_children(treeview)) >= 32:
-	# 	return
 	for title, link in parentLinks.items():
 		currentLinkChildren = Scraper.getLinks(link, linksSeen)
 		for k,v in currentLinkChildren.items():
 			treeview.insert("", 0, k, text=k)	
 			treeview.move(k,title,"end")
-			if len(get_all_children(treeview)) >= 150:
+			print(treeview.parent(item=title))
+			if len(get_all_children(treeview,treeview.parent(item=k))) >= 16:
 				return
-			# print(len(get_all_children(treeview)))
+
 		insertLinksToParents(treeview, currentLinkChildren)
 
 def getSizeOfParent(treeview, parent="", size=0):
 	children = treeview.get_children(parent)
 	size += len(children)
 	for child in children:
-		getSizeOfParent(treeview, child, size)
-	return size
+		return size + getSizeOfParent(treeview, child, size)
 
 def get_all_children(tree, item=""):
     children = tree.get_children(item)
