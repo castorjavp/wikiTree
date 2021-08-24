@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from scraper import Scraper
-
+from collections import deque
 
 links = {}
 app = Tk()
@@ -14,15 +14,30 @@ def callback():
 
 def populateTreeView(treeview,url):
 	randomLinks = Scraper.getLinks(url, linksSeen)
-	i=0
+	insertParentLinks(treeview, randomLinks)
 	for title,link in randomLinks.items():
+		q = deque()
+		q.append({"title":title, "link":link})
+		while get_all_children(treeview, title) <= 16:
+			parent = q.popleft()
+			childrenLinks = Scraper.getLinks(parent["link"], linksSeen)
+			for titleChild, linkChild in childrenLinks.items():
+				treeview.insert("", 0, titleChild, text=titleChild)	
+				treeview.move(titleChild, parent["title"],"end")
+				q.append({"title": titleChild, "link": linkChild})				
+		
+def get_all_children(treeview, item=""):
+	children = treeview.get_children(item)
+	if len(children) == 0:
+		return 0
+	for child in children:
+		return len(treeview.get_children(item)) + get_all_children(treeview, child)
+
+def insertParentLinks(treeview, links):
+	i=0
+	for title,link in links.items():
 		treeview.insert("", f"{i}", title , text=title)
 		i+=1
-	for title, link in randomLinks.items():
-		currentLinkChildren = Scraper.getLinks(link, linksSeen)
-		for k,v in currentLinkChildren.items():
-			treeview.insert("", f"{i}", k, text=k)	
-			treeview.move(k,title,"end")	
 
 app.title("WikiTree")
 app.geometry("800x450")
