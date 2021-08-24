@@ -16,7 +16,11 @@ def callback():
 def populateTreeView(treeview,url):
 	randomLinks = Scraper.getLinks(url, linksSeen)
 	insertLinks(treeview, randomLinks)
-	insertLinksToParents(treeview, randomLinks)
+	print(randomLinks)
+	index = 0
+	for title, link in randomLinks.items():	
+		insertLinksToParent(treeview, title, link, index)
+		index+=1
 
 
 def insertLinks(treeview, links):
@@ -24,18 +28,29 @@ def insertLinks(treeview, links):
 	for title,link in links.items():
 		treeview.insert("", f"{i}", title , text=title)
 		i+=1
+def insertLinksToParent(treeview, title, link, index):
+	print(get_all_children(treeview, treeview.get_children()[index]))
+	if get_all_children(treeview, treeview.get_children()[index]) >= 72:
+		return		
+	currentLinkChildren = Scraper.getLinks(link, linksSeen)
+	for k,v in currentLinkChildren.items():
+		treeview.insert("", 0, k, text=k)	
+		treeview.move(k,title,"end")
+	for title, link in currentLinkChildren.items():		
+		insertLinksToParent(treeview, title,link,index)
 
-def insertLinksToParents(treeview, parentLinks):
+def insertLinksToParents(treeview, parentLinks, i=0):
+	print(treeview.get_children()[i])
+	print(get_all_children(treeview, treeview.get_children()[i]))
+	if get_all_children(treeview, treeview.get_children()[i]) >= 13:
+		i+=1
+		return		
 	for title, link in parentLinks.items():
 		currentLinkChildren = Scraper.getLinks(link, linksSeen)
 		for k,v in currentLinkChildren.items():
 			treeview.insert("", 0, k, text=k)	
-			treeview.move(k,title,"end")
-			print(treeview.parent(item=title))
-			if len(get_all_children(treeview,treeview.parent(item=k))) >= 16:
-				return
-
-		insertLinksToParents(treeview, currentLinkChildren)
+			treeview.move(k,title,"end")		
+		insertLinksToParents(treeview, currentLinkChildren,i)
 
 def getSizeOfParent(treeview, parent="", size=0):
 	children = treeview.get_children(parent)
@@ -43,11 +58,13 @@ def getSizeOfParent(treeview, parent="", size=0):
 	for child in children:
 		return size + getSizeOfParent(treeview, child, size)
 
-def get_all_children(tree, item=""):
-    children = tree.get_children(item)
-    for child in children:
-        children += get_all_children(tree, child)
-    return children
+def get_all_children(treeview, item=""):
+	children = treeview.get_children(item)
+	if len(children) == 0:
+		return 0
+	for child in children:
+		return len(treeview.get_children(item)) + get_all_children(treeview, child)
+    
 
 app.title("WikiTree")
 app.geometry("800x450")
