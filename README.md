@@ -1,4 +1,4 @@
-#<center>WikiTreet</center>
+<h1 align ="center">WikiTree</h1>
 
 ## Description
 This application takes in a Wikipedia link and builds up a hierarchical tree. It scrapes all the links of the Wikipedia page and selects random ones, then for every link added to the tree, it will scrape the links of that page and add them to the tree as children of the previous link. It repeats this processive repeteadly implementing a double ended queue to end up with a balanced tree showing the relations of all links.
@@ -6,7 +6,7 @@ This application takes in a Wikipedia link and builds up a hierarchical tree. It
 ## Example
  Link : https://en.wikipedia.org/wiki/Computer_science
 
-Output: ![](./gitHubExample/example.PNG)
+Output: ![](./wikiTree/gitHubExample/example.PNG)
 
 ## To Do
  
