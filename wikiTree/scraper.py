@@ -4,7 +4,8 @@ import random
 
 class Scraper:
 	# this function expects a wikipedia url and returns a dictionary with the titles of all the content links and the links to other wikipedia pages in the url passed in.
-	def getLinks(url, linksSeen, maxNumOfLinks=8):
+	@staticmethod
+	def getLinks (url, linksSeen, maxNumOfLinks=8):
 		soup = BeautifulSoup(requests.get(url).text, 'html.parser')
 		links = soup.select('div#bodyContent a')
 		result = {}
@@ -18,7 +19,7 @@ class Scraper:
 			linksSeen.add(title)
 			result[title] = f'https://en.wikipedia.org{href}'
 		randomLinks = {}
-		for i in range(min(maxNumOfLinks,len(result))):
+		for _ in range(min(maxNumOfLinks,len(result))):
 			k,v = random.choice(list(result.items()))
 			randomLinks[k] = v
 		return randomLinks

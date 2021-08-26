@@ -1,5 +1,5 @@
-from tkinter import *
 from tkinter import ttk
+from tkinter import Tk, W, E
 from scraper import Scraper
 from collections import deque
 
@@ -35,7 +35,7 @@ def get_all_children(treeview, item=""):
 
 def insertParentLinks(treeview, links):
 	i=0
-	for title,link in links.items():
+	for title in links:
 		treeview.insert("", f"{i}", title , text=title)
 		i+=1
 
